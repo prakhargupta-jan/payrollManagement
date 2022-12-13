@@ -3,14 +3,20 @@ const {login, restrictTo, protect} = require('../controllers/authController')
 
 const attRoutes = Router()
 
+attRoutes.use(protect)
 
-app.route('/').get(protect, restrictTo('admin', 'manager'), checkAttendance);
+// employee specific
+attRoutes.route('/').get(restrictTo('employee'), checkAttendance).post(restrictTo('employee'), markAttendance);
 
-app.use(protect, restrictTo('employee'))
+// admin and managerRoutes
+attRoutes.use(restrictTo('manager', 'admin'))
+attRoutes.route('/manager').get(getAttendances('employee'))
+attRoutes.route('/manager/:date').get(getAttendanceByDate('employee'));
 
-attRoutes.route('/:uid').post(postPresence).get(checkAttendance);
+// admin specific
+attRoutes.use(restrictTo('admin'));
+attRoutes.route('/admin').get(getAttendances('employee', 'manager'))
+attRoutes.route('/admin/:date').get(getAttendanceByDate('employee', 'manager'))
 
-attRoutes.route('/admin').post(createUser).get(getUsers)
-attRoutes.route('/admin/:uid').delete(deleteUser).patch(updateUser);
 
 module.exports = attRoutes;

@@ -1,18 +1,26 @@
-// const {Router} = require('express')
-// const {login, restrictTo, protect} = require('../controllers/authController')
+const {Router} = require('express')
+const {login, restrictTo, protect, updatePassword} = require('../controllers/authController')
+const { createUser, deleteUser, getUser, getUsers, updateDeptManager, updateUser} = require('../controllers/userController')
 
-// const userRoutes = Router()
+const userRoutes = Router()
 
-// userRoutes.route('/login').post(login);
 
-// userRoutes.use(protect, restrictTo('admin', 'manager'))
+userRoutes.route('/login').post(login);
+userRoutes.use(protect);
 
-// userRoutes.route('/manager').post(createUser).get(getUsers);
-// userRoutes.route('/manager/:uid').patch(updateUser).delete(deleteUser);
+userRoutes.route('/update-password').post(updatePassword)           // something is very wrong here
+// Manager Routes
+userRoutes.use(restrictTo('manager', 'admin'))
+userRoutes.route('/manager').post(createUser('employee')).get(getUsers('employee'))
 
-// userRoutes.use(restrictTo('admin'));
+userRoutes.route('/manager/:uid').get(getUser('employee')).delete(deleteUser('employee')).patch(updateUser('employee'));
 
-// userRoutes.route('/admin').post(createUser).get(getUsers)
-// userRoutes.route('/admin/:uid').delete(deleteUser).patch(updateUser);
+// Admin Routes
+userRoutes.use(restrictTo('admin'));
+userRoutes.route('/admin').get(getUsers('manager', 'employee'))
 
-// module.exports = userRoutes;
+userRoutes.route('/admin/managers').get(getUsers('manager')).post(updateDeptManager, createUser('manager'));
+
+userRoutes.route('/admin/:uid').get(getUser('manager', 'employee')).delete(deleteUser('manager', 'employee')).patch(updateUser('manager', 'employee'));
+
+module.exports = userRoutes;

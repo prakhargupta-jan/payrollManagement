@@ -21,6 +21,7 @@ const handleProdError = (err, res) => {
 }
 
 module.exports = (err, req, res, next) => {
+    console.log(err);
     if (process.env.NODE_ENV == 'dev') {
         return handleDevError(err, res);
     } else {
