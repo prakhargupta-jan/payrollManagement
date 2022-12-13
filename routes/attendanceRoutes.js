@@ -1,6 +1,6 @@
 const {Router} = require('express')
-const {login, restrictTo, protect} = require('../controllers/authController')
-
+const {restrictTo, protect} = require('../controllers/authController')
+const {checkAttendance, getAttendances, getAttendancesByDate, markAttendance} = require('../controllers/attendanceController');
 const attRoutes = Router()
 
 attRoutes.use(protect)
@@ -11,12 +11,12 @@ attRoutes.route('/').get(restrictTo('employee'), checkAttendance).post(restrictT
 // admin and managerRoutes
 attRoutes.use(restrictTo('manager', 'admin'))
 attRoutes.route('/manager').get(getAttendances('employee'))
-attRoutes.route('/manager/:date').get(getAttendanceByDate('employee'));
+attRoutes.route('/manager/:date').get(getAttendancesByDate('employee'));
 
 // admin specific
 attRoutes.use(restrictTo('admin'));
 attRoutes.route('/admin').get(getAttendances('employee', 'manager'))
-attRoutes.route('/admin/:date').get(getAttendanceByDate('employee', 'manager'))
+attRoutes.route('/admin/:date').get(getAttendancesByDate('employee', 'manager'))
 
 
 module.exports = attRoutes;

@@ -1,3 +1,0 @@
-createOne
-getOne
-getAll
